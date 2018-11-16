@@ -9,6 +9,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class CarDiagnosticEngine {
 
@@ -38,8 +41,63 @@ public class CarDiagnosticEngine {
 		 * Treat the console as information being read by a user of this application. Attempts should be made to ensure
 		 * console output is as least as informative as the provided methods.
 		 */
-
-
+		if(!printMissingDataField(car)) System.exit(0);
+		
+		
+		Map<PartType, Integer> missingParts = car.getMissingPartsMap();
+		boolean checkDiagnostics = true;
+		for (Entry<PartType, Integer> entry : missingParts.entrySet()) {
+		    PartType key = entry.getKey();
+		    int value = entry.getValue();
+		    if(value > 0) {
+		    	printMissingPart(key, value);
+		    	checkDiagnostics = false;
+		    }
+		}
+		if(!checkDiagnostics)System.exit(0);
+		
+		
+		List<Part> checkDamageParts = car.getParts();
+		for(Part checkDamagePart : checkDamageParts) {
+			if(!checkDamagePart.isInWorkingCondition()) {
+				printDamagedPart(checkDamagePart.getType() ,checkDamagePart.getCondition() );
+				checkDiagnostics = false;
+			}
+		}
+		if(!checkDiagnostics)System.exit(0);
+		
+		
+	}
+	
+	private boolean  printMissingDataField(Car car) {
+		boolean checkDataField = true;
+		if(checkStringEmpty(car.getMake())) {
+			System.out.println("Make is missing");
+			checkDataField = false;
+			
+		}
+		if(checkStringEmpty(car.getModel())) {
+			System.out.println("Model is missing");
+			checkDataField = false;
+			
+		}
+		if(checkStringEmpty(car.getYear())) {
+			System.out.println("Year is missing");
+			checkDataField = false;
+		}
+		return checkDataField;
+	}
+	
+	private boolean checkStringEmpty(String str) {
+		
+		if(str != null && !str.isEmpty() && str.length()>0) {
+			return false;
+		}
+		else {
+			return true;
+		}
+		
+		
 	}
 
 	private void printMissingPart(PartType partType, Integer count) {

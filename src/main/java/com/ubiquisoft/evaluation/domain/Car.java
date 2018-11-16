@@ -3,6 +3,9 @@ package com.ubiquisoft.evaluation.domain;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +34,25 @@ public class Car {
 		 *      }
 		 */
 
-		return null;
+		List<Part> carParts = this.getParts();
+		Map<PartType,Integer> MissingPartsMap = new HashMap<PartType, Integer>();
+		
+		for (PartType partType : PartType.values()) {
+			int checkCount = 1;
+			if("TIRE".equals(partType.toString())) {
+				checkCount =4;
+			}
+			for(Part checkPart : carParts) {
+				if(partType.equals(checkPart.getType())) {
+					checkCount--;
+					if(checkCount == 0) 
+					break;
+				}
+			}
+			MissingPartsMap.put(partType, checkCount);
+		}
+		
+		return MissingPartsMap;
 	}
 
 	@Override
